@@ -1,40 +1,45 @@
-using System.Collections;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+[RequireComponent (typeof(SpriteRenderer))]
+public class WaypointMovement : MonoBehaviour
 {
-    [SerializeField] private Enemy _enemy;
-    [SerializeField] private Transform[] _spawnPoints;
+    [SerializeField] private Transform _path;
     [SerializeField] private float _speed;
 
-    private Coroutine _coroutine;
+    private SpriteRenderer _player;
+    private Transform[] _points;
+    private int _currentPoint;   
 
     private void Start()
     {
-        if (_coroutine != null)
-            StopCoroutine(_coroutine);
+        _player = GetComponent<SpriteRenderer>();
 
-        _coroutine = StartCoroutine(Play());
+        _points = new Transform[_path.childCount];
+
+        for (int i = 0; i < _path.childCount; i++)
+        {
+            _points[i] = _path.GetChild(i);
+        }
     }
 
     private void Update()
     {
-        transform.Translate(Vector3.right * _speed * Time.deltaTime);
-    }   
+        Transform target = _points[_currentPoint];
 
-    private IEnumerator Play()
-    {
-        bool isWork = true;
+        transform.position = Vector3.MoveTowards(transform.position, target.position, _speed * Time.deltaTime);
 
-        int delay = 2;
-
-        while (isWork)
+        if(transform.position == target.position)
         {
-            int spawnPointNumber = Random.Range(0, _spawnPoints.Length);
+            _player.flipX = false;
 
-            Instantiate(_enemy, _spawnPoints[spawnPointNumber]);
+            _currentPoint++;
 
-            yield return new WaitForSeconds(delay);
+            if(_currentPoint >= _points.Length)
+            {
+                _currentPoint = 0;
+
+                _player.flipX = true;
+            }
         }
     }
 }
