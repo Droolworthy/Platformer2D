@@ -1,40 +1,46 @@
-using System.Collections;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+[RequireComponent (typeof(PlayerMover))]
+[RequireComponent(typeof(Jump))]
+[RequireComponent(typeof(Animation))]
+[RequireComponent(typeof(Rotation))]
+public class Movement : MonoBehaviour
 {
-    [SerializeField] private Enemy _enemy;
-    [SerializeField] private Transform[] _spawnPoints;
-    [SerializeField] private float _speed;
-
-    private Coroutine _coroutine;
+    private PlayerMover _mover;
+    private Jump _jump;
+    private Animation _animation;
+    private Rotation _rotation;
 
     private void Start()
     {
-        if (_coroutine != null)
-            StopCoroutine(_coroutine);
+        _mover = GetComponent<PlayerMover>();
+        _jump = GetComponent<Jump>();
+        _animation = GetComponent<Animation>();
+        _rotation = GetComponent<Rotation>();
+    }
 
-        _coroutine = StartCoroutine(Play());
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        _jump.CheckingForGrounding(collision);
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        _jump.CheckingAbsenceOfGrounding(collision);
     }
 
     private void Update()
     {
-        transform.Translate(Vector3.right * _speed * Time.deltaTime);
-    }   
+        if (Input.GetKey(KeyCode.D))
+            _mover.MoveToRight();
 
-    private IEnumerator Play()
-    {
-        bool isWork = true;
+        if (Input.GetKey(KeyCode.A))
+            _mover.MoveToLeft();
 
-        int delay = 2;
+        _jump.JumpAtTouchOfKey();
 
-        while (isWork)
-        {
-            int spawnPointNumber = Random.Range(0, _spawnPoints.Length);
+        _animation.RunJumpAnimation();
 
-            Instantiate(_enemy, _spawnPoints[spawnPointNumber]);
-
-            yield return new WaitForSeconds(delay);
-        }
+        _rotation.TurnTowardsWalking();
     }
 }
