@@ -1,40 +1,50 @@
-using System.Collections;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animation))]
+public class Jump : MonoBehaviour
 {
-    [SerializeField] private Enemy _enemy;
-    [SerializeField] private Transform[] _spawnPoints;
-    [SerializeField] private float _speed;
+    [SerializeField] private float _jumpPower;
 
-    private Coroutine _coroutine;
+    private Animation _animator;
+    private Rigidbody2D _player;
+    private bool _isGround;
 
     private void Start()
     {
-        if (_coroutine != null)
-            StopCoroutine(_coroutine);
-
-        _coroutine = StartCoroutine(Play());
+        _player = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animation>();
     }
 
-    private void Update()
+    public void CheckingForGrounding(Collider2D collision)
     {
-        transform.Translate(Vector3.right * _speed * Time.deltaTime);
-    }   
+        bool isGround = true;
 
-    private IEnumerator Play()
+        CheckGrounding(collision, isGround);
+    }
+
+    public void CheckingAbsenceOfGrounding(Collider2D collision)
     {
-        bool isWork = true;
+        bool isGround = false;
 
-        int delay = 2;
+        CheckGrounding(collision, isGround);
+    }
 
-        while (isWork)
+    public void JumpAtTouchOfKey()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && _isGround)
         {
-            int spawnPointNumber = Random.Range(0, _spawnPoints.Length);
+            _player.AddForce(Vector2.up * _jumpPower, ForceMode2D.Impulse);
+        }
+    }
 
-            Instantiate(_enemy, _spawnPoints[spawnPointNumber]);
+    private void CheckGrounding(Collider2D collision, bool isGround)
+    {
+        if (collision.TryGetComponent<Ground>(out Ground ground))
+        {
+            _isGround = isGround;
 
-            yield return new WaitForSeconds(delay);
+            _animator.LaunchAnimationOfWalking(isGround);
         }
     }
 }
