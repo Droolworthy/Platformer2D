@@ -1,40 +1,28 @@
-using System.Collections;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+[RequireComponent(typeof(SpriteRenderer))]
+public class Rotation : MonoBehaviour
 {
-    [SerializeField] private Enemy _enemy;
-    [SerializeField] private Transform[] _spawnPoints;
-    [SerializeField] private float _speed;
-
-    private Coroutine _coroutine;
+    private SpriteRenderer _player;
+    private float _inputHorizontal;
 
     private void Start()
     {
-        if (_coroutine != null)
-            StopCoroutine(_coroutine);
-
-        _coroutine = StartCoroutine(Play());
+        _player = GetComponent<SpriteRenderer>();
     }
 
-    private void Update()
+    public void TurnTowardsWalking() 
     {
-        transform.Translate(Vector3.right * _speed * Time.deltaTime);
-    }   
+        _inputHorizontal = Input.GetAxis("Horizontal");
 
-    private IEnumerator Play()
-    {
-        bool isWork = true;
-
-        int delay = 2;
-
-        while (isWork)
+        if (_inputHorizontal > 0)
         {
-            int spawnPointNumber = Random.Range(0, _spawnPoints.Length);
+            _player.flipX = false;
+        }
 
-            Instantiate(_enemy, _spawnPoints[spawnPointNumber]);
-
-            yield return new WaitForSeconds(delay);
+        if (_inputHorizontal < 0)
+        {
+            _player.flipX = true;
         }
     }
 }
