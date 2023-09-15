@@ -1,40 +1,29 @@
-using System.Collections;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+public class PlayerMover : MonoBehaviour
 {
-    [SerializeField] private Enemy _enemy;
-    [SerializeField] private Transform[] _spawnPoints;
     [SerializeField] private float _speed;
 
-    private Coroutine _coroutine;
+    private float _direction;
 
-    private void Start()
+    public void MoveToRight()
     {
-        if (_coroutine != null)
-            StopCoroutine(_coroutine);
-
-        _coroutine = StartCoroutine(Play());
+        SetNextPosition(_direction);       
     }
 
-    private void Update()
+    public void MoveToLeft()
     {
-        transform.Translate(Vector3.right * _speed * Time.deltaTime);
-    }   
+        float coordinate = -1;
 
-    private IEnumerator Play()
+        _direction *= coordinate;
+
+        SetNextPosition(_direction);
+    }
+
+    private void SetNextPosition(float coordinate) 
     {
-        bool isWork = true;
+        _direction = _speed * Time.deltaTime;
 
-        int delay = 2;
-
-        while (isWork)
-        {
-            int spawnPointNumber = Random.Range(0, _spawnPoints.Length);
-
-            Instantiate(_enemy, _spawnPoints[spawnPointNumber]);
-
-            yield return new WaitForSeconds(delay);
-        }
+        transform.Translate(coordinate, 0, 0);
     }
 }
