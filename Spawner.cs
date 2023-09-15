@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private Enemy _enemy;
+    [SerializeField] private Coin _coin;
     [SerializeField] private Transform[] _spawnPoints;
-    [SerializeField] private float _speed;
+    [SerializeField] private float _delay;
 
     private Coroutine _coroutine;
 
@@ -17,24 +17,17 @@ public class Spawner : MonoBehaviour
         _coroutine = StartCoroutine(Play());
     }
 
-    private void Update()
-    {
-        transform.Translate(Vector3.right * _speed * Time.deltaTime);
-    }   
-
     private IEnumerator Play()
     {
         bool isWork = true;
-
-        int delay = 2;
 
         while (isWork)
         {
             int spawnPointNumber = Random.Range(0, _spawnPoints.Length);
 
-            Instantiate(_enemy, _spawnPoints[spawnPointNumber]);
+            Instantiate(_coin, _spawnPoints[spawnPointNumber].position, Quaternion.identity);
 
-            yield return new WaitForSeconds(delay);
+            yield return new WaitForSeconds(_delay);
         }
     }
 }
