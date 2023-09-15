@@ -1,40 +1,14 @@
-using System.Collections;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+public class Coin : MonoBehaviour
 {
-    [SerializeField] private Enemy _enemy;
-    [SerializeField] private Transform[] _spawnPoints;
-    [SerializeField] private float _speed;
-
-    private Coroutine _coroutine;
-
-    private void Start()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (_coroutine != null)
-            StopCoroutine(_coroutine);
+        float number = 0.1f;
 
-        _coroutine = StartCoroutine(Play());
-    }
-
-    private void Update()
-    {
-        transform.Translate(Vector3.right * _speed * Time.deltaTime);
-    }   
-
-    private IEnumerator Play()
-    {
-        bool isWork = true;
-
-        int delay = 2;
-
-        while (isWork)
+        if (collision.TryGetComponent<Player>(out Player player))
         {
-            int spawnPointNumber = Random.Range(0, _spawnPoints.Length);
-
-            Instantiate(_enemy, _spawnPoints[spawnPointNumber]);
-
-            yield return new WaitForSeconds(delay);
+            Destroy(gameObject, number);
         }
     }
 }
