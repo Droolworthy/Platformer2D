@@ -1,18 +1,18 @@
 using UnityEngine;
 
-public class PlacementRestriction : MonoBehaviour
+public class Animation : MonoBehaviour
 {
-    [SerializeField] private float _minBounds;
-    [SerializeField] private float _maxBounds;
+    [SerializeField] private Animator _animator;
 
-    private Vector3 _clampedPosition;
-
-    private void Update()
+    public void RunJumpAnimation()
     {
-        _clampedPosition = transform.position;
+        float horizontalMove = Input.GetAxisRaw("Horizontal");
 
-        _clampedPosition.x = Mathf.Clamp(_clampedPosition.x, _minBounds, _maxBounds);
+        _animator.SetFloat("Speed", Mathf.Abs(horizontalMove)); 
+    }
 
-        transform.position = _clampedPosition;
+    public void LaunchAnimationOfWalking(bool isGround)
+    {
+        _animator.SetBool("isGround", isGround);
     }
 }
